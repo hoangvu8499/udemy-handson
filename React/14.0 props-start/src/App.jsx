@@ -28,20 +28,25 @@ function App() {
         <section id="core-concepts">
           <h2>Khái niệm chính trong React</h2>
           <ul>
-            <MainContent{...myData[0]}/>
+            {/* <MainContent{...myData[0]}/>
             <MainContent{...myData[1]}/>
             <MainContent{...myData[2]}/>
-            <MainContent{...myData[3]}/>
+            <MainContent{...myData[3]}/> */}
+            {
+              myData.map((item) => (
+                 <MainContent key={item.title} {...item}/>
+              ))
+            }
           </ul>
         </section>
 
         <section id="examples">
           <h2>Examples</h2>
           <menu>
-            <TabButton onSelect={()=>{handleSelect('components')}}>Components</TabButton>
-            <TabButton onSelect={()=>{handleSelect('jsx')}}>JSX</TabButton>
-            <TabButton onSelect={()=>{handleSelect('props')}}>Props</TabButton>
-            <TabButton onSelect={()=>{handleSelect('state')}}>State</TabButton>
+            <TabButton isSelected={selectedTopic==="components"} onSelect={()=>{handleSelect('components')}}>Components</TabButton>
+            <TabButton isSelected={selectedTopic==="jsx"} onSelect={()=>{handleSelect('jsx')}}>JSX</TabButton>
+            <TabButton isSelected={selectedTopic==="props"} onSelect={()=>{handleSelect('props')}}>Props</TabButton>
+            <TabButton isSelected={selectedTopic==="state"} onSelect={()=>{handleSelect('state')}}>State</TabButton>
           </menu>
           <div id="tab-content">
             {/* <h3>{EXAMPLES.components.title}</h3>  */}
