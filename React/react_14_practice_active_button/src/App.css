@@ -1,0 +1,63 @@
+body {
+      background-color: #000; /* nền đen chung */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .warning-box {
+      border: 2px solid orange;
+      padding: 20px;
+      text-align: center;
+      color: #fff;
+      background-color: #222;
+    }
+
+    .warning-box button {
+      margin: 10px;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .confirm-btn {
+      background-color: green;
+      color: white;
+    }
+
+    .cancel-btn {
+      background-color: red;
+      color: white;
+    }
+
+    .activated-box {
+      color: lime;
+      font-size: 20px;
+      font-weight: bold;
+      background-color: #111;
+      padding: 15px;
+    }
+
+    .cancel-box {
+      background-color: #111;
+      padding: 15px;
+    }
+
+    .activate-btn {
+      background-color: blue;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+    }
