@@ -3,7 +3,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/hrm?createDatabaseIfNotExist=true&autoReconnect=true&showSSL=false
     username: root
-    password: root
+    password: AAVN@hv8499
   jpa:
     properties:
       hibernate:
