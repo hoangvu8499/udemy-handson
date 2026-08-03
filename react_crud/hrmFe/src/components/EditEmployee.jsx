@@ -1,7 +1,32 @@
 import React from 'react'
 
-export const EditEmployee = () => {
+
+export default function EditEmployee({
+  result,
+  scores,
+  targetTime,
+  currentTime,
+  ref
+}) {
   return (
-    <div>EditEmployee</div>
-  )
+    <dialog ref={ref} className="result-dialog">
+      <h3>{result}</h3>
+
+      <p>
+        Your sscores: <strong>{scores}/100</strong>
+      </p>
+
+      <p>
+        Target time: <strong>{targetTime}s</strong>
+      </p>
+
+      <p>
+        Your time: <strong>{currentTime}s</strong>
+      </p>
+
+      <form method="dialog">
+        <button>close</button>
+      </form>
+    </dialog>
+  );
 }

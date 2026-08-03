@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +22,7 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     @PostMapping("/save")
-    public ResponseEntity<Employee> save(@RequestBody Employee employee) {
+    public ResponseEntity<Employee> save(@Valid @RequestBody Employee employee) {
         log.info("@@@@@@Trying to save data for Employee: " + employee.getEmpName());
         return ResponseEntity.ok(employeeService.save(employee));
     }
