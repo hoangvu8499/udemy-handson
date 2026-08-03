@@ -1,9 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import EditEmployee from "./EditEmployee";
 
 export default function ShowEmployee() {
     const navigation = useNavigate();
+    const dialog = useRef();
+    const [employeeSelected, setEmployeeSelected] = useState();
+
 
     const [employees, setEmployees] = useState([]);
     const [error, setError] = useState("");
@@ -37,7 +41,14 @@ export default function ShowEmployee() {
         }
     };
 
+    function handleEdit(employee) {
+      setEmployeeSelected(employee)
+      dialog.current.showModal();
+    }
+
     return (
+      <>
+        <EditEmployee employee={employeeSelected}  ref={dialog} />
         <div>
             <h2>Employee List</h2>
             <button onClick={redirectToAddEmployee}>Add Employee</button>
@@ -73,7 +84,9 @@ export default function ShowEmployee() {
                             <td>{employee.empAddress}</td>
                             <td>{employee.empSalary}</td>
                             <td>
-                                <button>Edit</button>
+                                <button onClick={() => handleEdit(employee)}>
+                                  Edit
+                                </button>
                                 &nbsp;
                                 <button>Delete</button>
                             </td>
@@ -82,5 +95,7 @@ export default function ShowEmployee() {
                 </tbody>
             </table>
         </div>
+        </>
     );
+    
 }

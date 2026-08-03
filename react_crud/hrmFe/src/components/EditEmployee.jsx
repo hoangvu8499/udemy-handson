@@ -1,27 +1,23 @@
 import React from 'react'
 
-
 export default function EditEmployee({
-  result,
-  scores,
-  targetTime,
-  currentTime,
+  employee,
   ref
 }) {
   return (
     <dialog ref={ref} className="result-dialog">
-      <h3>{result}</h3>
+      <h3>Edit Employee</h3>
 
       <p>
-        Your sscores: <strong>{scores}/100</strong>
+        Name: <strong>{employee?.empName}</strong>
       </p>
 
       <p>
-        Target time: <strong>{targetTime}s</strong>
+        Address: <strong>{employee?.empAddress}</strong>
       </p>
 
       <p>
-        Your time: <strong>{currentTime}s</strong>
+        Salary: <strong>{employee?.empSalary}</strong>
       </p>
 
       <form method="dialog">

@@ -6,7 +6,6 @@ import './App.css'
 import {BrowserRouter as Router, Route,  Routes } from 'react-router-dom'
 import ShowEmployee from './components/ShowEmployee'
 import AddEmployee from './components/AddEmployee'
-import { EditEmployee } from './components/EditEmployee'
 import 'bootstrap/dist/css/bootstrap.min.css'
 function App() {
   const [count, setCount] = useState(0)
@@ -17,7 +16,7 @@ function App() {
         <Routes>
           <Route exact path='/' element={<ShowEmployee/>} /> 
           <Route exact path='/addemployee' element={<AddEmployee/>} /> 
-          <Route exact path='/edit/:empId' element={<EditEmployee/>} /> 
+          {/* <Route exact path='/edit/:empId' element={<EditEmployee/>} />  */}
 
         </Routes>
       </Router>
