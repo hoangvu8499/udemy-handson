@@ -1,0 +1,12 @@
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class EmployeeDTO {
+
+    private Integer empId;
+    private String empName;
+    private String empAddress;
+    private Double empSalary;
+    private Integer catId;
+    private String catName;
+}

@@ -6,7 +6,8 @@ import EditEmployee from "./EditEmployee";
 export default function ShowEmployee() {
     const navigation = useNavigate();
     const dialog = useRef();
-    const [employeeSelected, setEmployeeSelected] = useState();
+    const [employeeId, setEmployeeId] = useState();
+    const [message, setMessage] = useState("");
 
 
     const [employees, setEmployees] = useState([]);
@@ -41,16 +42,53 @@ export default function ShowEmployee() {
         }
     };
 
-    function handleEdit(employee) {
-      setEmployeeSelected(employee)
+    function handleEdit(employeeId) {
+      setEmployeeId(employeeId);
       dialog.current.showModal();
     }
 
+    async function handleDeleteEmployee(employeeId) {
+        try {
+            const response = await axios.delete(
+              `http://localhost:8080/employees/deletebyid/${employeeId}`,
+              {
+                timeout: 3000
+              }
+            );
+
+            console.log("Response:", response.data);
+            setMessage("DELETE SUCCESS")
+            loadEmployees();
+        } catch (error) {
+            console.log("ERROR =", error.code);
+            if (error.code === "ERR_NETWORK") {
+                console.log("Request timeout sau 3 giây");
+                setErrMessage(
+                   "API PROBLEM - PLEASE CHECK CONNECTION"
+                );
+            } else if (error.response) {
+                console.log("STATUS =", error.response.status);
+                console.log("DATA =", error.response.data);
+                setErrMessage(
+                   "Have problem when DELETE Employee information | Error code: "+ error.response.status +" Message: "+error.response.data.message
+                );
+            } else {
+                setErrMessage("Unknown error");
+            }
+        }
+    }
+
+
     return (
       <>
-        <EditEmployee employee={employeeSelected}  ref={dialog} />
+        <EditEmployee employeeId={employeeId}  ref={dialog} 
+                    onUpdateSuccess={(msg) => {
+                      setMessage(msg);
+                      loadEmployees();
+                     }} />
         <div>
             <h2>Employee List</h2>
+            {message && <p className="message" style={{ color: 'red' }} >{message}</p>}
             <button onClick={redirectToAddEmployee}>Add Employee</button>
             {error && (
                 <p style={{ color: "red" }}>
@@ -84,11 +122,12 @@ export default function ShowEmployee() {
                             <td>{employee.empAddress}</td>
                             <td>{employee.empSalary}</td>
                             <td>
-                                <button onClick={() => handleEdit(employee)}>
+                                <button onClick={() => handleEdit(employee.empId)}>
                                   Edit
                                 </button>
                                 &nbsp;
-                                <button>Delete</button>
+                                <button onClick={() => handleDeleteEmployee(employee.empId)}>
+                                  Delete</button>
                             </td>
                         </tr>
                     ))}

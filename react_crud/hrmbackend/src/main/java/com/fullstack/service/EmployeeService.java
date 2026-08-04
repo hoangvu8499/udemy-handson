@@ -40,4 +40,26 @@ public class EmployeeService {
     public void deleteById(int empId) {
         employeeRepository.deleteById(empId);
     }
+
+    public List<EmployeeDTO> findAllEmployees() {
+
+    List<Object[]> rows = employeeRepository.findEmployeesWithCategory();
+
+    List<EmployeeDTO> result = new ArrayList<>();
+
+    for (Object[] row : rows) {
+        EmployeeDTO dto = new EmployeeDTO();
+
+        dto.setEmpId((Integer) row[0]);
+        dto.setEmpName((String) row[1]);
+        dto.setEmpAddress((String) row[2]);
+        dto.setEmpSalary((Double) row[3]);
+        dto.setCatId((Integer) row[4]);
+        dto.setCatName((String) row[5]);
+
+        result.add(dto);
+    }
+
+    return result;
+}
 }

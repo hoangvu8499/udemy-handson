@@ -1,7 +1,5 @@
 package com.fullstack.entity;
 
-import jakarta.persistence.Transient;
-
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -13,23 +11,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "EMPLOYEE")
-public class Employee {
+@Table(name = "CATEGORY")
+public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int empId;
-
-    @NotBlank(message = "Employee name is required")
-    @Size(min = 2, message = "Employee name must be at least 2 characters")
-    private String empName;
-
-    private String empAddress;
-
-    private double empSalary;
-
     private int catId;
 
-    @Transient
-    private Category category;
+    @NotBlank(message = "Employee name is required")
+    @Size(min = 5, message = "Employee name must be at least 5 characters")
+    private String catName;
+
 }
