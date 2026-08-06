@@ -3,24 +3,50 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import EditEmployee from "./EditEmployee";
 
-export default function ShowEmployee() {
+export default function ShowEmployee({
+        categories
+    }) {
     const navigation = useNavigate();
     const dialog = useRef();
     const [employeeId, setEmployeeId] = useState();
     const [message, setMessage] = useState("");
+    const [filterObject, setFilterObject] = useState({
+        empName:"",
+        catId:""
+    });
 
 
     const [employees, setEmployees] = useState([]);
     const [error, setError] = useState("");
+    // const [categories, setCategories] = useState([]);
 
     useEffect(() => {
         loadEmployees();
+        // loadCategories();
     }, []);
+
+    useEffect(() => {
+        console.log("filterObject =", filterObject);
+    }, [filterObject]);
+
+    // const loadCategories = async () => {
+    //     try {
+    //         const response = await axios.get(
+    //             "http://localhost:8080/category/findall"
+    //         );
+
+    //         setCategories(response.data);
+    //     } catch (error) {
+    //         console.error(error);
+    //     }
+    // };
 
     const loadEmployees = async () => {
         try {
-            const response = await axios.get(
-                "http://localhost:8080/employees/findall",
+
+            const response = await axios.post(
+                "http://localhost:8080/employees/searchEmployee",
+                filterObject,
                 {
                     timeout: 3000
                 }
@@ -40,6 +66,23 @@ export default function ShowEmployee() {
             console.error(err);
             setError("Không thể tải màn hình addEmployee");
         }
+    };
+
+    const handleFilterChange = (e) => {
+        const { name, value } = e.target;
+
+        console.log("1--:", e.target);
+        console.log("1--:", name);
+        console.log("1--:", value);
+
+        setFilterObject((prev) => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const handleSearch = () => {
+        loadEmployees();
     };
 
     function handleEdit(employeeId) {
@@ -96,6 +139,51 @@ export default function ShowEmployee() {
                 </p>
             )}
 
+            <div style={{ margin: "15px 0" }}>
+              <input
+                  type="text"
+                  name="empName"
+                  placeholder="Employee Name"
+                  value={filterObject.empName}
+                  onChange={handleFilterChange}
+                  style={{ marginRight: "10px" }}
+              />
+
+              <select
+                  name="catId"
+                  value={filterObject.catId}
+                  onChange={handleFilterChange}
+                  style={{ marginRight: "10px" }}
+              >
+                  <option value="">All Category</option>
+
+                  {categories.map((category) => (
+                      <option
+                          key={category.catId}
+                          value={category.catId}
+                      >
+                          {category.catName}
+                      </option>
+                  ))}
+              </select>
+
+              <button onClick={handleSearch}>
+                  Search
+              </button>
+
+              <button
+                  style={{ marginLeft: "10px" }}
+                  onClick={() => {
+                      setFilterObject({
+                          empName: "",
+                          catId: ""
+                      });
+                  }}
+              >
+                  Clear
+              </button>
+            </div>
+
             <table
                 border="1"
                 cellPadding="10"
@@ -110,6 +198,7 @@ export default function ShowEmployee() {
                         <th>Employee Name</th>
                         <th>Employee Address</th>
                         <th>Employee Salary</th>
+                        <th>Category</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -121,6 +210,7 @@ export default function ShowEmployee() {
                             <td>{employee.empName}</td>
                             <td>{employee.empAddress}</td>
                             <td>{employee.empSalary}</td>
+                            <td>{employee.catName}</td>
                             <td>
                                 <button onClick={() => handleEdit(employee.empId)}>
                                   Edit

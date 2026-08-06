@@ -1,10 +1,12 @@
 package com.fullstack.service;
 
+import com.fullstack.dto.EmployeeDTO;
 import com.fullstack.entity.Employee;
 import com.fullstack.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +22,27 @@ public class EmployeeService {
 
     public Optional<Employee> findById(int empId) {
         return Optional.ofNullable(employeeRepository.findById(empId).orElseThrow(() -> new RuntimeException("Employee #ID Does Not Exist")));
+    }
+
+
+    public EmployeeDTO findEmployeesWithCategoryById(int empId) {
+
+        List<Object[]> rows = employeeRepository.findEmployeesWithCategoryById(empId);
+
+        for (Object[] row : rows) {
+            EmployeeDTO dto = new EmployeeDTO();
+
+            dto.setEmpId((Integer) row[0]);
+            dto.setEmpName((String) row[1]);
+            dto.setEmpAddress((String) row[2]);
+            dto.setEmpSalary((Double) row[3]);
+            dto.setCatId((Integer) row[4]);
+            dto.setCatName((String) row[5]);
+
+            return dto;
+        }
+
+        return null;
     }
 
     public List<Employee> findAll() {
@@ -41,25 +64,24 @@ public class EmployeeService {
         employeeRepository.deleteById(empId);
     }
 
-    public List<EmployeeDTO> findAllEmployees() {
+    public List<EmployeeDTO> findAllEmployees(EmployeeDTO employee) {
 
-    List<Object[]> rows = employeeRepository.findEmployeesWithCategory();
+        List<Object[]> rows = employeeRepository.findEmployeesWithCategory(employee.getCatId(), employee.getEmpName());
+        List<EmployeeDTO> result = new ArrayList<>();
 
-    List<EmployeeDTO> result = new ArrayList<>();
+        for (Object[] row : rows) {
+            EmployeeDTO dto = new EmployeeDTO();
 
-    for (Object[] row : rows) {
-        EmployeeDTO dto = new EmployeeDTO();
+            dto.setEmpId((Integer) row[0]);
+            dto.setEmpName((String) row[1]);
+            dto.setEmpAddress((String) row[2]);
+            dto.setEmpSalary((Double) row[3]);
+            dto.setCatId((Integer) row[4]);
+            dto.setCatName((String) row[5]);
 
-        dto.setEmpId((Integer) row[0]);
-        dto.setEmpName((String) row[1]);
-        dto.setEmpAddress((String) row[2]);
-        dto.setEmpSalary((Double) row[3]);
-        dto.setCatId((Integer) row[4]);
-        dto.setCatName((String) row[5]);
+            result.add(dto);
+        }
 
-        result.add(dto);
+        return result;
     }
-
-    return result;
-}
 }

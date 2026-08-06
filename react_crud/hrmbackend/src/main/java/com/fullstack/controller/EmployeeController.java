@@ -1,5 +1,6 @@
 package com.fullstack.controller;
 
+import com.fullstack.dto.EmployeeDTO;
 import com.fullstack.entity.Employee;
 import com.fullstack.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
@@ -28,13 +29,18 @@ public class EmployeeController {
     }
 
     @GetMapping("/findbyid/{empId}")
-    public ResponseEntity<Optional<Employee>> findById(@PathVariable int empId) {
-        return ResponseEntity.ok(employeeService.findById(empId));
+    public ResponseEntity<EmployeeDTO> findById(@PathVariable int empId) {
+        return ResponseEntity.ok(employeeService.findEmployeesWithCategoryById(empId));
     }
 
     @GetMapping("/findall")
     public ResponseEntity<List<Employee>> findAll() {
         return ResponseEntity.ok(employeeService.findAll());
+    }
+
+    @PostMapping("/searchEmployee")
+    public ResponseEntity<List<EmployeeDTO>> searchEmployee(@RequestBody EmployeeDTO employee) {
+        return ResponseEntity.ok(employeeService.findAllEmployees(employee));
     }
 
     @PutMapping("/update/{empId}")

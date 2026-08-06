@@ -2,23 +2,30 @@ import axios from "axios";
 import { useState } from "react"
 import { redirect, useNavigate } from 'react-router-dom';
 
-export default function AddEmployee() {
+export default function AddEmployee(props) {
 
+    const { categories } = props;
+    
     const navigation = useNavigate();
 
     const [employee, setEmployee] = useState({
         empName:"",
         empAddress:"",
-        empSalary:""
+        empSalary:"",
+        catId:""
     });
 
     const [errMessage, setErrMessage] = useState("");
 
-    const {empName, empAddress, empSalary} = employee;
+    const {empName, empAddress, empSalary, catId} = employee;
 
     const onInputChange = (e) => {
         setEmployee({...employee, [e.target.name]: e.target.value})
     }
+
+    // const handleFilterChange = (e) => {
+    //     setEmployee({...employee, [e.target.name]: e.target.value})
+    // };
 
     const onSubmit = async(e) => {
 
@@ -98,6 +105,24 @@ export default function AddEmployee() {
 
                         <div className='mb-3'>
                             Salary<input type='number' name='empSalary' value={empSalary} onChange={(e) => onInputChange(e)} />
+                        </div>
+                        <div className='mb-3'>
+                            <select
+                                name="catId"
+                                value={catId}
+                                onChange={onInputChange}
+                                style={{ marginRight: "10px" }} >
+                                <option value="">All Category</option>
+
+                                {categories.map((category) => (
+                                    <option
+                                        key={category.catId}
+                                        value={category.catId}
+                                    >
+                                        {category.catName}
+                                    </option>
+                                ))}
+                            </select>
                         </div>
 
                         <button type='submit' className='btn btn-success'>Add Employee</button>
