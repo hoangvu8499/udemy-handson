@@ -3,6 +3,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import EditEmployee from "./EditEmployee";
 import FilterEmployee from "./FilterEmployee";
+import ExportEmployeePdf from "./ExportEmployeePdf";
+
 
 export default function ShowEmployee({
         categories
@@ -130,15 +132,23 @@ export default function ShowEmployee({
                       setMessage(msg);
                       loadEmployees();
                      }} />
+        
         <div>
             <h2>Employee List</h2>
             {message && <p className="message" style={{ color: 'red' }} >{message}</p>}
-            <button onClick={redirectToAddEmployee}>Add Employee</button>
-            {error && (
-                <p style={{ color: "red" }}>
-                    {error}
-                </p>
-            )}
+            <div style={{
+                    display: "flex",
+                    alignItems: "center",
+                    marginLeft:"35%"
+                    }}>
+                <button onClick={redirectToAddEmployee}>Add Employee</button>
+                {error && (
+                    <p style={{ color: "red" }}>
+                        {error}
+                    </p>
+                )}
+                <ExportEmployeePdf employees={employees} />
+            </div>
 
             <FilterEmployee filterObject={filterObject} 
             handleFilterChange={handleFilterChange} 
