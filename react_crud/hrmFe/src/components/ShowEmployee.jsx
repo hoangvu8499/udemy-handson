@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import EditEmployee from "./EditEmployee";
 import FilterEmployee from "./FilterEmployee";
 import ExportEmployeePdf from "./ExportEmployeePdf";
+import Pagination from "./Pagination";
 
 
 export default function ShowEmployee({
@@ -18,6 +19,9 @@ export default function ShowEmployee({
         catId:""
     });
 
+    const [totalPages, setTotalPages] = useState(0);
+    const [pageSize, setPageSize] = useState(0);
+    const [pageNumber, setPageNumber] = useState(0);
 
     const [employees, setEmployees] = useState([]);
     const [error, setError] = useState("");
@@ -28,9 +32,10 @@ export default function ShowEmployee({
         // loadCategories();
     }, []);
 
-    useEffect(() => {
-        console.log("filterObject =", filterObject);
-    }, [filterObject]);
+    useEffect(() => { //pageNumber đổi thì load lại Employees
+        loadEmployees();
+        console.log("pageNumber =", pageNumber);
+    }, [pageNumber]);
 
     // const loadCategories = async () => {
     //     try {
@@ -51,11 +56,19 @@ export default function ShowEmployee({
                 "http://localhost:8080/employees/searchEmployee",
                 filterObject,
                 {
+                    params: {
+                        page: pageNumber,
+                        size: 2
+                    },
                     timeout: 3000
-                }
+                    }
             );
+            console.log("===="+response.data.content);
 
-            setEmployees(response.data);
+            setTotalPages(response.data.totalPages);
+            setPageSize(response.data.pageable.pageSize);
+            setPageNumber(response.data.pageable.pageNumber);
+            setEmployees(response.data.content);
         } catch (err) {
             console.error(err);
             setError("Không thể tải danh sách nhân viên");
@@ -77,6 +90,9 @@ export default function ShowEmployee({
         console.log("1--:", e.target);
         console.log("1--:", name);
         console.log("1--:", value);
+        console.log("-pageNumber-:", pageAbles.pageNumber);
+        console.log("-pageSize-:", pageAbles.pageSize);
+        console.log("-totalPages-:", pageAbles.totalPages);
 
         setFilterObject((prev) => ({
             ...prev,
@@ -195,6 +211,8 @@ export default function ShowEmployee({
                     ))}
                 </tbody>
             </table>
+
+            <Pagination currentPage={pageNumber} totalPages={totalPages} pageNumbers = {pageSize} setPageNumber={setPageNumber}/>
         </div>
         </>
     );

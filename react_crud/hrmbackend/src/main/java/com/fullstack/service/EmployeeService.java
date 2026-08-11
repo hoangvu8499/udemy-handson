@@ -4,6 +4,9 @@ import com.fullstack.dto.EmployeeDTO;
 import com.fullstack.entity.Employee;
 import com.fullstack.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -64,12 +67,16 @@ public class EmployeeService {
         employeeRepository.deleteById(empId);
     }
 
-    public List<EmployeeDTO> findAllEmployees(EmployeeDTO employee) {
+    public Page<EmployeeDTO> findAllEmployees(EmployeeDTO employee, int page, int size) {
 
-        List<Object[]> rows = employeeRepository.findEmployeesWithCategory(employee.getCatId(), employee.getEmpName());
-        List<EmployeeDTO> result = new ArrayList<>();
+        Pageable pageable = PageRequest.of(page, size);
 
-        for (Object[] row : rows) {
+        Page<Object[]> rows = employeeRepository.findEmployeesWithCategory(
+                employee.getCatId(),
+                employee.getEmpName(),
+                pageable);
+
+        return rows.map(row -> {
             EmployeeDTO dto = new EmployeeDTO();
 
             dto.setEmpId((Integer) row[0]);
@@ -79,9 +86,7 @@ public class EmployeeService {
             dto.setCatId((Integer) row[4]);
             dto.setCatName((String) row[5]);
 
-            result.add(dto);
-        }
-
-        return result;
+            return dto;
+        });
     }
 }

@@ -5,6 +5,8 @@ import com.fullstack.entity.Employee;
 import com.fullstack.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.Valid;
@@ -39,8 +41,11 @@ public class EmployeeController {
     }
 
     @PostMapping("/searchEmployee")
-    public ResponseEntity<List<EmployeeDTO>> searchEmployee(@RequestBody EmployeeDTO employee) {
-        return ResponseEntity.ok(employeeService.findAllEmployees(employee));
+    public ResponseEntity<Page<EmployeeDTO>> searchEmployee(
+        @RequestBody EmployeeDTO employee,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "5") int size ) {
+        return ResponseEntity.ok(employeeService.findAllEmployees(employee, page, size));
     }
 
     @PutMapping("/update/{empId}")
