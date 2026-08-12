@@ -18,6 +18,8 @@ export default function ShowEmployee({
         empName:"",
         catId:""
     });
+    const [sortField, setSortField] = useState("");
+    const [direction, setDirection] = useState("");
 
     const [totalPages, setTotalPages] = useState(0);
     const [pageSize, setPageSize] = useState(0);
@@ -34,37 +36,23 @@ export default function ShowEmployee({
 
     useEffect(() => { //pageNumber đổi thì load lại Employees
         loadEmployees();
-        console.log("pageNumber =", pageNumber);
-    }, [pageNumber]);
-
-    // const loadCategories = async () => {
-    //     try {
-    //         const response = await axios.get(
-    //             "http://localhost:8080/category/findall"
-    //         );
-
-    //         setCategories(response.data);
-    //     } catch (error) {
-    //         console.error(error);
-    //     }
-    // };
+    }, [pageNumber, sortField, direction]);
 
     const loadEmployees = async () => {
         try {
-
             const response = await axios.post(
                 "http://localhost:8080/employees/searchEmployee",
                 filterObject,
                 {
                     params: {
                         page: pageNumber,
-                        size: 2
+                        size: 5,
+                        sortField: sortField,
+                        direction: direction
                     },
                     timeout: 3000
                     }
             );
-            console.log("===="+response.data.content);
-
             setTotalPages(response.data.totalPages);
             setPageSize(response.data.pageable.pageSize);
             setPageNumber(response.data.pageable.pageNumber);
@@ -73,6 +61,11 @@ export default function ShowEmployee({
             console.error(err);
             setError("Không thể tải danh sách nhân viên");
         }
+    };
+
+    const handleSort = (sortField, sortDirection) => {
+        setSortField(sortField);
+        setDirection(sortDirection);
     };
 
     const redirectToAddEmployee = async () => {
@@ -90,9 +83,6 @@ export default function ShowEmployee({
         console.log("1--:", e.target);
         console.log("1--:", name);
         console.log("1--:", value);
-        console.log("-pageNumber-:", pageAbles.pageNumber);
-        console.log("-pageSize-:", pageAbles.pageSize);
-        console.log("-totalPages-:", pageAbles.totalPages);
 
         setFilterObject((prev) => ({
             ...prev,
@@ -182,12 +172,60 @@ export default function ShowEmployee({
             >
                 <thead>
                     <tr>
-                        <th>ID</th>
-                        <th>Employee Name</th>
-                        <th>Employee Address</th>
-                        <th>Employee Salary</th>
-                        <th>Category</th>
-                        <th>Action</th>
+                        <th>
+                            <div className="sortable-header">
+                                <span>ID</span>
+                                <div className="sort-icons">
+                                    <span onClick={() =>handleSort("emp_id","ASC")}>▲</span>
+                                    <span onClick={() =>handleSort("emp_id","DESC")}>▼</span>
+                                </div>
+                            </div>
+                        </th>
+                        <th>
+                            <div className="sortable-header">
+                                <span>Employee Name</span>
+                                <div className="sort-icons">
+                                    <span onClick={() =>handleSort("emp_name","ASC")}>▲</span>
+                                    <span onClick={() =>handleSort("emp_name","DESC")}>▼</span>
+                                </div>
+                            </div>
+                        </th>
+                        <th>
+                            <div className="sortable-header">
+                                <span>Employee Address</span>
+                                <div className="sort-icons">
+                                    <span onClick={() =>handleSort("emp_address","ASC")}>▲</span>
+                                    <span onClick={() =>handleSort("emp_address","DESC")}>▼</span>
+                                </div>
+                            </div>
+                        </th>
+                        <th>
+                            <div className="sortable-header">
+                                <span>Employee Salary</span>
+                                <div className="sort-icons">
+                                    <span onClick={() =>handleSort("emp_salary","ASC")}>▲</span>
+                                    <span onClick={() =>handleSort("emp_salary","DESC")}>▼</span>
+                                </div>
+                            </div>
+                        </th>
+                        <th>
+                            <div className="sortable-header">
+                                <span>Category</span>
+                                <div className="sort-icons">
+                                    <span onClick={() =>handleSort("cat_id","ASC")}>▲</span>
+                                    <span onClick={() =>handleSort("cat_id","DESC")}>▼</span>
+                                </div>
+                            </div>
+                        </th>
+                        <th>
+                            <div className="sortable-header">
+                                <span>Action</span>
+                                <div className="sort-icons">
+                                    <span>▲</span>
+                                    <span>▼</span>
+                                </div>
+                            </div>
+                        </th>
                     </tr>
                 </thead>
 

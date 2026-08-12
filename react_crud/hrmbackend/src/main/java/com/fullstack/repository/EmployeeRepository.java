@@ -1,5 +1,6 @@
 package com.fullstack.repository;
 
+import com.fullstack.dto.EmployeeDTO;
 import com.fullstack.entity.Employee;
 
 import org.springframework.data.domain.Page;

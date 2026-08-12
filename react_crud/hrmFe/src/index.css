@@ -109,3 +109,28 @@ code {
   padding: 4px 8px;
   background: var(--code-bg);
 }
+
+
+.sortable-header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+}
+
+.sort-icons {
+    display: flex;
+    flex-direction: column;
+    line-height: 8px;
+}
+
+.sort-icons span {
+    font-size: 10px;
+    color: #888;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.sort-icons span:hover {
+    color: #ffc107;
+}

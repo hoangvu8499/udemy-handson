@@ -44,8 +44,13 @@ public class EmployeeController {
     public ResponseEntity<Page<EmployeeDTO>> searchEmployee(
         @RequestBody EmployeeDTO employee,
         @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "5") int size ) {
-        return ResponseEntity.ok(employeeService.findAllEmployees(employee, page, size));
+        @RequestParam(defaultValue = "5") int size,
+        @RequestParam(defaultValue = "") String sortField,
+        @RequestParam(defaultValue = "") String direction
+    ) {
+        log.info("----sortField------"+sortField);
+        log.info("----direction------"+direction);
+        return ResponseEntity.ok(employeeService.findAllEmployees(employee, page, size, sortField, direction));
     }
 
     @PutMapping("/update/{empId}")

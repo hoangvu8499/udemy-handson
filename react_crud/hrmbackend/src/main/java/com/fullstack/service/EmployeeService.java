@@ -4,10 +4,14 @@ import com.fullstack.dto.EmployeeDTO;
 import com.fullstack.entity.Employee;
 import com.fullstack.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,10 +71,21 @@ public class EmployeeService {
         employeeRepository.deleteById(empId);
     }
 
-    public Page<EmployeeDTO> findAllEmployees(EmployeeDTO employee, int page, int size) {
-
-        Pageable pageable = PageRequest.of(page, size);
-
+    public Page<EmployeeDTO> findAllEmployees(EmployeeDTO employee, int page, 
+        int size, String sortField, String direction) {
+        Sort sort = null;
+        if(!StringUtils.isEmpty(sortField) && !StringUtils.isEmpty(direction)) {
+            sort = Sort.by(
+                Sort.Direction.fromString(direction),
+                sortField
+            );
+        }
+        Pageable pageable = null;
+        if(sort != null) {
+            pageable = PageRequest.of(page, size, sort);
+        } else {
+            pageable = PageRequest.of(page, size);
+        }
         Page<Object[]> rows = employeeRepository.findEmployeesWithCategory(
                 employee.getCatId(),
                 employee.getEmpName(),
