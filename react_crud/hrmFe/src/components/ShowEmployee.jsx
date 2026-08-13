@@ -50,6 +50,9 @@ export default function ShowEmployee({
                         sortField: sortField,
                         direction: direction
                     },
+                    headers: {
+                        Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2IiwicGhvbmVOdW1iZXIiOiIwODM0MzE0NDE0IiwianRpIjoiMjk3MzMwNmMtMmZkYS00MWU1LTllODEtYmIzNmE0OWIwZTU3IiwiaWF0IjoxNzg2NjEyODA4LCJleHAiOjE3ODY2MTY0MDh9.De3pQFS1qKVyZGtc_VdMPsoe0Pvpza9BDgbVYHlAfdo`
+                    },
                     timeout: 3000
                     }
             );

@@ -3,23 +3,22 @@ package com.fullstack.controller;
 import com.fullstack.dto.EmployeeDTO;
 import com.fullstack.entity.Employee;
 import com.fullstack.service.EmployeeService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
 
+import javax.validation.Valid;
 import java.util.List;
-import java.util.Optional;
 
 @CrossOrigin(origins = "*")
-
 @RestController
 @RequestMapping("/employees")
 @RequiredArgsConstructor
 @Slf4j
+@SecurityRequirement(name = "bearerAuth")
 public class EmployeeController {
 
     private final EmployeeService employeeService;
@@ -42,14 +41,14 @@ public class EmployeeController {
 
     @PostMapping("/searchEmployee")
     public ResponseEntity<Page<EmployeeDTO>> searchEmployee(
-        @RequestBody EmployeeDTO employee,
-        @RequestParam(defaultValue = "0") int page,
-        @RequestParam(defaultValue = "5") int size,
-        @RequestParam(defaultValue = "") String sortField,
-        @RequestParam(defaultValue = "") String direction
+            @RequestBody EmployeeDTO employee,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "") String sortField,
+            @RequestParam(defaultValue = "") String direction
     ) {
-        log.info("----sortField------"+sortField);
-        log.info("----direction------"+direction);
+        log.info("----sortField------" + sortField);
+        log.info("----direction------" + direction);
         return ResponseEntity.ok(employeeService.findAllEmployees(employee, page, size, sortField, direction));
     }
 

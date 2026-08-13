@@ -7,7 +7,53 @@ spring:
   jpa:
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
+        dialect: org.hibernate.dialect.MySQL8Dialect
     hibernate:
       ddl-auto: update
     show-sql: true
+
+  redis:
+    host: localhost
+    port: 6379
+    # password:
+    database: 0
+    timeout: 2000ms
+    lettuce:
+      pool:
+        max-active: 16
+        max-idle: 8
+        min-idle: 2
+
+jwt:
+  # HS256 secret - thay bang gia tri rieng khi deploy (>= 32 ky tu)
+  secret: flashsale-service-secret-key-change-me-1234567890
+  access-token-expiration-ms: 3600000      # 1h
+  refresh-token-expiration-ms: 604800000   # 7d
+
+# ===== OTP =====
+otp:
+  expiration-seconds: 60   # OTP chi ton tai 1 phut
+  length: 6                # toi da 6
+  max-verify-attempts: 5   # sai du 5 lan -> user bi BLACK_LIST
+
+# ===== Inventory =====
+inventory:
+  reconciliation:
+    interval-ms: 600000        # doi soat ton kho vs logs moi 10 phut
+    initial-delay-ms: 60000    # chay lan dau sau khi start 1 phut
+    alert-email: inventory-alert@flashsale.local
+
+# ===== Auth =====
+auth:
+  support-hotline: "1900 8198"   # hotline ho tro khi tai khoan bi BLACK_LIST
+  rate-limit:
+    login:
+      max-attempts: 5      # so lan login toi da / window
+      window-seconds: 300
+    otp:
+      max-requests: 3      # so lan xin OTP toi da / window
+      window-seconds: 300
+
+logging:
+  level:
+    com.flashsale: DEBUG
