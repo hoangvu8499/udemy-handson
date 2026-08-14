@@ -5,11 +5,9 @@ import EditEmployee from "./EditEmployee";
 import FilterEmployee from "./FilterEmployee";
 import ExportEmployeePdf from "./ExportEmployeePdf";
 import Pagination from "./Pagination";
-
-
-export default function ShowEmployee({
-        categories
-    }) {
+import { isTokenValid } from "../utils/authUtils";
+import { getAllCategories } from "../utils/categoryService"
+export default function ShowEmployee() {
     const navigation = useNavigate();
     const dialog = useRef();
     const [employeeId, setEmployeeId] = useState();
@@ -20,19 +18,28 @@ export default function ShowEmployee({
     });
     const [sortField, setSortField] = useState("");
     const [direction, setDirection] = useState("");
-
     const [totalPages, setTotalPages] = useState(0);
     const [pageSize, setPageSize] = useState(0);
     const [pageNumber, setPageNumber] = useState(0);
-
     const [employees, setEmployees] = useState([]);
     const [error, setError] = useState("");
-    // const [categories, setCategories] = useState([]);
+    const [categories, setCategories] = useState([]);
 
     useEffect(() => {
         loadEmployees();
-        // loadCategories();
+        loadCategories();
     }, []);
+
+    const loadCategories = async () => {
+        try {
+            if(isTokenValid) {
+                const response = await getAllCategories();
+                setCategories(response.data);
+            }
+        } catch(error) {
+            console.error(error);
+        }
+    }
 
     useEffect(() => { //pageNumber đổi thì load lại Employees
         loadEmployees();
@@ -40,26 +47,31 @@ export default function ShowEmployee({
 
     const loadEmployees = async () => {
         try {
-            const response = await axios.post(
-                "http://localhost:8080/employees/searchEmployee",
-                filterObject,
-                {
-                    params: {
-                        page: pageNumber,
-                        size: 5,
-                        sortField: sortField,
-                        direction: direction
-                    },
-                    headers: {
-                        Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2IiwicGhvbmVOdW1iZXIiOiIwODM0MzE0NDE0IiwianRpIjoiMjk3MzMwNmMtMmZkYS00MWU1LTllODEtYmIzNmE0OWIwZTU3IiwiaWF0IjoxNzg2NjEyODA4LCJleHAiOjE3ODY2MTY0MDh9.De3pQFS1qKVyZGtc_VdMPsoe0Pvpza9BDgbVYHlAfdo`
-                    },
-                    timeout: 3000
+            if(isTokenValid()) {
+                const response = await axios.post(
+                    "http://localhost:8080/employees/searchEmployee",
+                    filterObject,
+                    {
+                        params: {
+                            page: pageNumber,
+                            size: 5,
+                            sortField: sortField,
+                            direction: direction
+                        },
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+                        },
+                        timeout: 3000
                     }
-            );
-            setTotalPages(response.data.totalPages);
-            setPageSize(response.data.pageable.pageSize);
-            setPageNumber(response.data.pageable.pageNumber);
-            setEmployees(response.data.content);
+                );
+                setTotalPages(response.data.totalPages);
+                setPageSize(response.data.pageable.pageSize);
+                setPageNumber(response.data.pageable.pageNumber);
+                setEmployees(response.data.content);
+            } else {
+                navigation('/login');
+            }
+            
         } catch (err) {
             console.error(err);
             setError("Không thể tải danh sách nhân viên");

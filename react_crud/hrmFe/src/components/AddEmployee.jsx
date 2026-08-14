@@ -1,23 +1,36 @@
 import axios from "axios";
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { redirect, useNavigate } from 'react-router-dom';
+import { isTokenValid } from "../utils/authUtils";
+import { getAllCategories } from "../utils/categoryService"
 
-export default function AddEmployee(props) {
-
-    const { categories } = props;
+export default function AddEmployee() {
     
     const navigation = useNavigate();
-
     const [employee, setEmployee] = useState({
         empName:"",
         empAddress:"",
         empSalary:"",
         catId:""
     });
-
     const [errMessage, setErrMessage] = useState("");
-
     const {empName, empAddress, empSalary, catId} = employee;
+    const [categories, setCategories] = useState([]);
+
+    useEffect(() => {
+        loadCategories();
+    }, []);
+
+    const loadCategories = async () => {
+        try {
+            if(isTokenValid) {
+                const response = await getAllCategories();
+                setCategories(response.data);
+            }
+        } catch(error) {
+            console.error(error);
+        }
+    }
 
     const onInputChange = (e) => {
         setEmployee({...employee, [e.target.name]: e.target.value})
@@ -26,6 +39,12 @@ export default function AddEmployee(props) {
     // const handleFilterChange = (e) => {
     //     setEmployee({...employee, [e.target.name]: e.target.value})
     // };
+
+    useEffect(() => {
+        if (!isTokenValid()) {
+            navigation("/login");
+        }
+    }, []);
 
     const onSubmit = async(e) => {
 
@@ -47,16 +66,24 @@ export default function AddEmployee(props) {
         }
 
         try {
-            const response = await axios.post(
-                "http://localhost:8080/employees/save",
-                employee,
-                {
-                    timeout: 3000 // 3 giây
-                }
-            );
+            if(isTokenValid()) {
+                const response = await axios.post(
+                        "http://localhost:8080/employees/save",
+                        employee,
+                        {
+                            headers: {
+                                Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+                            },
+                            timeout: 3000 // 3 giây
+                        }
+                    );
 
-            console.log("Response:", response.data);
-            navigation('/');
+                console.log("Response:", response.data);
+                navigation('/');
+            } else {
+                navigation('/login');
+            }
+            
         } catch (error) {
             console.log("ERROR =", error.code);
             if (error.code === "ERR_NETWORK") {
