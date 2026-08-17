@@ -2,6 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { redirect, useNavigate } from 'react-router-dom';
 import { isTokenValid } from "../utils/authUtils";
+import { jwtDecode } from "jwt-decode";
 
 function Login() {
 
@@ -23,21 +24,23 @@ function Login() {
     const handleLogin = async () => {
         try {
             const response = await axios.post(
-                "http://localhost:8080/api/auth/login",
+                "http://localhost:8080/api/auth/login2",
                 loginForm,
                 {
-                    timeout: 3000
+                    timeout: 3000,
+                    withCredentials: true
                 }
             );
 
             console.log("Response:", response.data);
 
             const tokenData = response.data.data;
-
-            localStorage.setItem("accessToken", tokenData.accessToken);
-            localStorage.setItem("refreshToken", tokenData.refreshToken);
-            localStorage.setItem("tokenType", tokenData.tokenType);
-            localStorage.setItem("expiresInSeconds", tokenData.expiresInSeconds);
+            const decoded = jwtDecode(tokenData.accessToken);
+            localStorage.setItem("expiresTime", decoded.exp);
+            // localStorage.setItem("accessToken", tokenData.accessToken);
+            // localStorage.setItem("refreshToken", tokenData.refreshToken);
+            // localStorage.setItem("tokenType", tokenData.tokenType);
+            // localStorage.setItem("expiresInSeconds", tokenData.expiresInSeconds);
 
             navigation('/');
         } catch (error) {

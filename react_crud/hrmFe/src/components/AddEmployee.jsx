@@ -71,10 +71,11 @@ export default function AddEmployee() {
                         "http://localhost:8080/employees/save",
                         employee,
                         {
-                            headers: {
-                                Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-                            },
-                            timeout: 3000 // 3 giây
+                            // headers: {
+                            //     Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+                            // },
+                            timeout: 3000,
+                            withCredentials: true
                         }
                     );
 

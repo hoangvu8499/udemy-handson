@@ -13,6 +13,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -34,10 +35,36 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        String header = request.getHeader("Authorization");
-        if (StringUtils.hasText(header) && header.startsWith(BEARER_PREFIX)) {
-            String token = header.substring(BEARER_PREFIX.length());
+        // String header = request.getHeader("Authorization");
+        // if (StringUtils.hasText(header) && header.startsWith(BEARER_PREFIX)) {
+        //     String token = header.substring(BEARER_PREFIX.length());
+        //     try {
+        //         Claims claims = jwtTokenProvider.parseToken(token);
+        //         // chi chap nhan token con trong Redis (chua bi logout thu hoi)
+        //         if (tokenService.isAccessTokenActive(claims.getId())) {
+        //             Long userId = Long.valueOf(claims.getSubject());
+        //             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+        //                     userId, null,
+        //                     Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")));
+        //             SecurityContextHolder.getContext().setAuthentication(authentication);
+        //         }
+        //     } catch (BusinessException | NumberFormatException ignored) {
+        //         SecurityContextHolder.clearContext();
+        //     }
+        // }
+        Cookie[] cookies = request.getCookies();
+        String token = null;
+        if(cookies != null) {
+            for(Cookie cookie : cookies) {
+                if("accessToken".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                    break;
+                }
+            }
+        }
+        if(token != null) {
             try {
+                System.out.println("-----------TOKEN: "+token);
                 Claims claims = jwtTokenProvider.parseToken(token);
                 // chi chap nhan token con trong Redis (chua bi logout thu hoi)
                 if (tokenService.isAccessTokenActive(claims.getId())) {

@@ -19,7 +19,11 @@ export default function EditEmployee({
   useEffect(() => {
     async function loadEmployee() {
       const response = await axios.get(
-        `http://localhost:8080/employees/findbyid/${employeeId}`
+        `http://localhost:8080/employees/findbyid/${employeeId}`,
+        {
+          timeout: 3000,
+          withCredentials: true
+        }
       );
 
       setEmployeeEdited(response.data);
@@ -63,7 +67,8 @@ export default function EditEmployee({
                 `http://localhost:8080/employees/update/${employeeEdited.empId}`,
                 employeeEdited,
                 {
-                    timeout: 3000 // 3 giây
+                  timeout: 3000,
+                  withCredentials: true
                 }
             );
 

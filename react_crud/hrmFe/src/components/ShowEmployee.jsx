@@ -58,10 +58,11 @@ export default function ShowEmployee() {
                             sortField: sortField,
                             direction: direction
                         },
-                        headers: {
-                            Authorization: `Bearer ${localStorage.getItem("accessToken")}`
-                        },
-                        timeout: 3000
+                        // headers: {
+                        //     Authorization: `Bearer ${localStorage.getItem("accessToken")}`
+                        // },
+                        timeout: 3000,
+                        withCredentials: true
                     }
                 );
                 setTotalPages(response.data.totalPages);
@@ -73,8 +74,19 @@ export default function ShowEmployee() {
             }
             
         } catch (err) {
-            console.error(err);
-            setError("Không thể tải danh sách nhân viên");
+            console.log("ERROR =", error.code);
+            if (error.code === "ERR_NETWORK") {
+                console.log("Request timeout sau 3 giây");
+                setErrMessage(
+                   "API PROBLEM - PLEASE CHECK CONNECTION"
+                );
+            } else if (error.response) {
+                console.log("STATUS =", error.response.status);
+                console.log("DATA =", error.response.data);
+                setError("Không thể tải danh sách nhân viên");
+            } else {
+                setErrMessage("Unknown error");
+            }
         }
     };
 

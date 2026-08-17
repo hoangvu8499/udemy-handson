@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 @Tag(name = "Auth", description = "Dang ky, xac thuc OTP, login/logout")
@@ -57,6 +58,19 @@ public class AuthController {
                                             HttpServletRequest httpRequest) {
         return ApiResponse.success(authService.login(request,
                 extractClientIp(httpRequest), httpRequest.getHeader("User-Agent")));
+    }
+
+    @Operation(summary = "Login bang so dien thoai + password",
+            description = "Tra ve JWT access token + refresh token; token duoc luu Redis de verify/thu hoi. "
+                    + "Moi phien login/logout deu duoc ghi vao bang auth_session_logs.")
+    @PostMapping("/login2")
+    public ApiResponse<TokenResponse> login2(@Valid @RequestBody LoginRequest request,
+                                        HttpServletRequest httpRequest,
+                                        HttpServletResponse httpResponse) {
+        return ApiResponse.success(authService.login2(request,
+                extractClientIp(httpRequest), 
+                httpRequest.getHeader("User-Agent"),
+                httpResponse));
     }
 
     @Operation(summary = "Logout — thu hoi refresh token",

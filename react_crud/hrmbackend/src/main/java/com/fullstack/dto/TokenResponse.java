@@ -1,5 +1,7 @@
 package com.fullstack.dto;
 
+import javax.servlet.http.Cookie;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,4 +15,5 @@ public class TokenResponse {
     private String refreshToken;
     private String tokenType;
     private long expiresInSeconds;
+    private Cookie cookie;
 }

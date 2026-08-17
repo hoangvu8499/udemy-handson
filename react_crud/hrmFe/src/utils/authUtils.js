@@ -1,16 +1,12 @@
 import { jwtDecode } from "jwt-decode";
 
 export const isTokenValid = () => {
-    const token = localStorage.getItem("accessToken");
-
-    if (!token) {
+    const expiresTime = localStorage.getItem("expiresTime")
+    if (!expiresTime) {
         return false;
     }
-
     try {
-        const decoded = jwtDecode(token);
-
-        return decoded.exp > Date.now() / 1000;
+        return expiresTime > Date.now() / 1000;
     } catch (error) {
         return false;
     }

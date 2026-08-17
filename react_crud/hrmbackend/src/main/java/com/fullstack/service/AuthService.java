@@ -26,6 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -147,6 +150,43 @@ public class AuthService {
 
         saveSessionLog(user.getId(), phoneNumber, AuthSessionAction.LOGIN, jti, requestIp, userAgent);
 
+        return TokenResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .tokenType("Bearer")
+                .expiresInSeconds(jwtTokenProvider.getAccessTokenExpirationMs() / 1000)
+                .build();
+    }
+
+    @Transactional
+    public TokenResponse login2(LoginRequest request, String requestIp, String userAgent, HttpServletResponse httpResponse) {
+        String phoneNumber = PhoneNumberUtils.normalize(request.getPhoneNumber());
+
+        rateLimitService.checkLoginLimit(phoneNumber);
+
+        User user = userRepository.findByPhone(phoneNumber)
+                .orElseThrow(() -> new BusinessException(ErrorCode.BAD_CREDENTIALS));
+        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+            throw new BusinessException(ErrorCode.BAD_CREDENTIALS);
+        }
+        if (user.getStatus() == UserStatus.BLACK_LIST) {
+            throw new BusinessException(ErrorCode.USER_BLACKLISTED, blacklistMessage());
+        }
+        if (user.getStatus() != UserStatus.ACTIVE) {
+            throw new BusinessException(ErrorCode.USER_NOT_ACTIVE);
+        }
+
+        String jti = UUID.randomUUID().toString();
+        String accessToken = jwtTokenProvider.generateAccessToken(user.getId(), phoneNumber, jti);
+        tokenService.storeAccessToken(jti, user.getId());
+        String refreshToken = tokenService.createRefreshToken(user.getId(), jti);
+
+        saveSessionLog(user.getId(), phoneNumber, AuthSessionAction.LOGIN, jti, requestIp, userAgent);
+        Cookie cookie = new Cookie("accessToken", accessToken);
+        cookie.setHttpOnly(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(15*60);
+        httpResponse.addCookie(cookie);
         return TokenResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
