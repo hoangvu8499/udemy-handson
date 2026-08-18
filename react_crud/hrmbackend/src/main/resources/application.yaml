@@ -27,8 +27,8 @@ spring:
 jwt:
   # HS256 secret - thay bang gia tri rieng khi deploy (>= 32 ky tu)
   secret: flashsale-service-secret-key-change-me-1234567890
-  # access-token-expiration-ms: 3600000      # 1h
-  access-token-expiration-ms: 300000 #5p
+  access-token-expiration-ms: 3600000      # 1h
+  #access-token-expiration-ms: 300000 #5p
   refresh-token-expiration-ms: 604800000   # 7d
 
 # ===== OTP =====
@@ -58,3 +58,14 @@ auth:
 logging:
   level:
     com.flashsale: DEBUG
+
+
+requestBody:
+  content:
+    multipart/form-data:
+      schema:
+        type: object
+        properties:
+          uploaded_file:
+            type: string
+            format: binary

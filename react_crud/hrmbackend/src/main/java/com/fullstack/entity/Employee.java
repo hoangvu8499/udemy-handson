@@ -2,6 +2,7 @@ package com.fullstack.entity;
 
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,6 +15,7 @@ import javax.validation.constraints.Size;
 @NoArgsConstructor
 @Entity
 @Table(name = "EMPLOYEE")
+@Builder
 public class Employee {
 
     @Id

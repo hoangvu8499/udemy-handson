@@ -24,6 +24,7 @@ export default function ShowEmployee() {
     const [employees, setEmployees] = useState([]);
     const [error, setError] = useState("");
     const [categories, setCategories] = useState([]);
+    const [file, setFile] = useState(null);
 
     useEffect(() => {
         loadEmployees();
@@ -65,6 +66,10 @@ export default function ShowEmployee() {
                         withCredentials: true
                     }
                 );
+                console.log("------loadEmployees: ", response.data.content);
+                console.log("------pageNumber: ", pageNumber);
+                console.log("------sortField: ", sortField);
+                console.log("------direction: ", direction);
                 setTotalPages(response.data.totalPages);
                 setPageSize(response.data.pageable.pageSize);
                 setPageNumber(response.data.pageable.pageNumber);
@@ -77,7 +82,7 @@ export default function ShowEmployee() {
             console.log("ERROR =", error.code);
             if (error.code === "ERR_NETWORK") {
                 console.log("Request timeout sau 3 giây");
-                setErrMessage(
+                setMessage(
                    "API PROBLEM - PLEASE CHECK CONNECTION"
                 );
             } else if (error.response) {
@@ -85,7 +90,7 @@ export default function ShowEmployee() {
                 console.log("DATA =", error.response.data);
                 setError("Không thể tải danh sách nhân viên");
             } else {
-                setErrMessage("Unknown error");
+                setMessage("Unknown error");
             }
         }
     };
@@ -106,11 +111,6 @@ export default function ShowEmployee() {
 
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
-
-        console.log("1--:", e.target);
-        console.log("1--:", name);
-        console.log("1--:", value);
-
         setFilterObject((prev) => ({
             ...prev,
             [name]: value
@@ -118,6 +118,7 @@ export default function ShowEmployee() {
     };
 
     const handleSearch = () => {
+        setPageNumber(0);
         loadEmployees();
     };
 
@@ -131,7 +132,8 @@ export default function ShowEmployee() {
             const response = await axios.delete(
               `http://localhost:8080/employees/deletebyid/${employeeId}`,
               {
-                timeout: 3000
+                timeout: 3000,
+                withCredentials: true
               }
             );
 
@@ -157,6 +159,71 @@ export default function ShowEmployee() {
         }
     }
 
+    const handleFileUpload = (e) => {
+        const selectedFile = e.target.files[0];
+        if (!selectedFile) {
+            return;
+        }
+        importEmployee(selectedFile);
+    };
+
+    // useEffect(() => {
+    //     if (file) {
+    //         importEmployee();
+    //     }    
+    // }, [file]);
+
+    const importEmployee = async (selectedFile) => {
+        try {
+            const formData = new FormData();
+            formData.append("file", selectedFile);
+            const response = await axios.post(
+                "http://localhost:8080/employees/import",
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                    timeout: 3000,
+                    withCredentials: true,
+                    responseType: "blob"
+                }
+            );
+            if (response.status === 200) {
+                setMessage(
+                   "Import employee thành công"
+                );
+                loadEmployees();
+            }
+        } catch (error) {
+
+            if (error.response?.status === 400) {
+
+                const blob = new Blob(
+                    [error.response.data],
+                    { type: "text/plain" }
+                );
+
+                const url = window.URL.createObjectURL(blob);
+
+                const link = document.createElement("a");
+                link.href = url;
+                link.download = "employee_import_error.txt";
+
+                document.body.appendChild(link);
+                link.click();
+
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+                setMessage("Import thất bại. Vui lòng kiểm tra file lỗi.");
+                loadEmployees();
+            } else {
+                setMessage("Có sự cố xảy ra, vui lòng thử lại sau.");
+                loadEmployees();
+                console.error(error);
+            }
+        }
+    };
 
     return (
       <>
@@ -169,18 +236,67 @@ export default function ShowEmployee() {
         <div>
             <h2>Employee List</h2>
             {message && <p className="message" style={{ color: 'red' }} >{message}</p>}
-            <div style={{
+            <div
+                style={{
                     display: "flex",
                     alignItems: "center",
-                    marginLeft:"35%"
-                    }}>
-                <button onClick={redirectToAddEmployee}>Add Employee</button>
-                {error && (
-                    <p style={{ color: "red" }}>
-                        {error}
-                    </p>
-                )}
+                    justifyContent: "center",
+                    gap: "12px",
+                    padding: "12px",
+                    marginBottom: "20px",
+                    backgroundColor: "#f8f9fa",
+                    borderRadius: "8px",
+                    border: "1px solid #ddd",
+                }}
+            >
+                <button
+                    onClick={redirectToAddEmployee}
+                    style={{
+                        padding: "8px 16px",
+                        backgroundColor: "#28a745",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "5px",
+                        cursor: "pointer",
+                        fontWeight: "bold",
+                    }}
+                >
+                    Add Employee
+                </button>
+
+                <label
+                    style={{
+                        fontWeight: "bold",
+                        color: "#555",
+                    }}
+                >
+                    Import Employee:
+                </label>
+
+                <input
+                    type="file"
+                    accept=".xlsx,.xls,.csv"
+                    onChange={handleFileUpload}
+                    style={{
+                        padding: "6px",
+                        border: "1px solid #ccc",
+                        borderRadius: "5px",
+                        backgroundColor: "white",
+                    }}
+                />
+
                 <ExportEmployeePdf employees={employees} />
+
+                {error && (
+                    <span
+                        style={{
+                            color: "red",
+                            fontWeight: "bold",
+                        }}
+                    >
+                        {error}
+                    </span>
+                )}
             </div>
 
             <FilterEmployee filterObject={filterObject} 
@@ -277,7 +393,8 @@ export default function ShowEmployee() {
                 </tbody>
             </table>
 
-            <Pagination currentPage={pageNumber} totalPages={totalPages} pageNumbers = {pageSize} setPageNumber={setPageNumber}/>
+            <Pagination currentPage={pageNumber} totalPages={totalPages} 
+                    pageNumbers = {pageSize} setPageNumber={setPageNumber}/>
         </div>
         </>
     );

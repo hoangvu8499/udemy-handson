@@ -6,12 +6,19 @@ import com.fullstack.service.EmployeeService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+
+import java.util.List;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -61,5 +68,25 @@ public class EmployeeController {
     public ResponseEntity<String> deleteById(@PathVariable int empId) {
         employeeService.deleteById(empId);
         return ResponseEntity.ok("Data Deleted Successfully");
+    }
+
+    @PostMapping(value ="/import",
+        consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<Resource> importEmployee(
+            @RequestParam("file") MultipartFile file) throws Exception {
+        List<String> errors = employeeService.importEmployee(file);
+        if (!errors.isEmpty()) {
+            String content = String.join("\n", errors);
+            ByteArrayResource resource = new ByteArrayResource(content.getBytes());
+            return ResponseEntity.badRequest()
+                    .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=employee_import_error.txt"
+                    )
+                    .contentType(MediaType.TEXT_PLAIN)
+                    .body(resource);
+        }
+        return ResponseEntity.ok().build();
     }
 }
