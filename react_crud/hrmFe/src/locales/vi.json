@@ -1,0 +1,11 @@
+{
+  "employeeManagement": "Quản lý nhân viên",
+  "addEmployee": "Thêm nhân viên",
+  "search": "Tìm kiếm",
+  "employeeName": "Tên nhân viên",
+  "employeeAddress": "Địa chỉ",
+  "salary": "Lương",
+  "importEmployee": "Thêm Nhiều Nhân Viên",
+  "exportTable": "Xuất dữ liệu PDF"
+
+}

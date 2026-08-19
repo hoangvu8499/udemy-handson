@@ -1,0 +1,11 @@
+{
+  "employeeManagement": "Employee Management",
+  "addEmployee": "Add Employee",
+  "search": "Search",
+  "employeeName": "Employee Name",
+  "employeeAddress": "Employee Address",
+  "salary": "Salary",
+  "importLanguage": "Import Employee",
+  "exportTable": "Export Table to PDF"
+
+}

@@ -7,6 +7,8 @@ import ExportEmployeePdf from "./ExportEmployeePdf";
 import Pagination from "./Pagination";
 import { isTokenValid } from "../utils/authUtils";
 import { getAllCategories } from "../utils/categoryService"
+import { useTranslation } from "react-i18next";
+
 export default function ShowEmployee() {
     const navigation = useNavigate();
     const dialog = useRef();
@@ -25,6 +27,7 @@ export default function ShowEmployee() {
     const [error, setError] = useState("");
     const [categories, setCategories] = useState([]);
     const [file, setFile] = useState(null);
+    const { t } = useTranslation();
 
     useEffect(() => {
         loadEmployees();
@@ -118,8 +121,11 @@ export default function ShowEmployee() {
     };
 
     const handleSearch = () => {
-        setPageNumber(0);
-        loadEmployees();
+        if(pageNumber>0) {
+            setPageNumber(0);
+        } else {
+            loadEmployees();
+        }
     };
 
     function handleEdit(employeeId) {
@@ -167,11 +173,6 @@ export default function ShowEmployee() {
         importEmployee(selectedFile);
     };
 
-    // useEffect(() => {
-    //     if (file) {
-    //         importEmployee();
-    //     }    
-    // }, [file]);
 
     const importEmployee = async (selectedFile) => {
         try {
@@ -234,7 +235,7 @@ export default function ShowEmployee() {
                      }} />
         
         <div>
-            <h2>Employee List</h2>
+            <h2>{t("employeeManagement")}</h2>
             {message && <p className="message" style={{ color: 'red' }} >{message}</p>}
             <div
                 style={{
@@ -261,7 +262,8 @@ export default function ShowEmployee() {
                         fontWeight: "bold",
                     }}
                 >
-                    Add Employee
+                    {t("addEmployee")} 
+                    {/* label multi language */}
                 </button>
 
                 <label
@@ -270,7 +272,7 @@ export default function ShowEmployee() {
                         color: "#555",
                     }}
                 >
-                    Import Employee:
+                    {t("importEmployee")} 
                 </label>
 
                 <input

@@ -1,8 +1,10 @@
 import React from 'react';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { useTranslation } from "react-i18next";
 
 const ExportEmployeePdf = ({employees}) => {
+    const { t } = useTranslation();
 
   const handleExportPDF = () => {
     // 1. Initialize jsPDF instance (Default: portrait, millimeters, A4)
@@ -57,7 +59,7 @@ const ExportEmployeePdf = ({employees}) => {
           cursor: 'pointer'
         }}
       >
-        Export Table to PDF
+        {t("exportTable")} 
       </button>
     </div>
   );

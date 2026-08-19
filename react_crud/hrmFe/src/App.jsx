@@ -10,12 +10,14 @@ import AddEmployee from './components/AddEmployee'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import Login from "./components/Login";
 import { isTokenValid } from "./utils/authUtils";
+import LanguageSwitcher from "./components/LanguageSwitcher";
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
     <>
+      <LanguageSwitcher />
       <Router>
         <Routes>
           <Route  exact path='/' element={<ShowEmployee />} /> 
